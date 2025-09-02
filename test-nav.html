@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест навигации</title>
+    <style>
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .page {
+            display: none;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .page.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="page active" id="mainPage">
+        <h1>Главная страница</h1>
+        <p>Это главная страница гаданий</p>
+    </div>
+    
+    <div class="page" id="shopPage">
+        <h1>Магазин</h1>
+        <p>Это страница магазина</p>
+    </div>
+    
+    <div class="page" id="cabinetPage">
+        <h1>Кабинет</h1>
+        <p>Это страница кабинета</p>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-item" id="navShop" onclick="switchPage('shopPage', 'navShop')" style="cursor: pointer;">
+            <span>🛒 Магазин</span>
+        </button>
+        <button class="nav-item active" id="navReadings" onclick="switchPage('mainPage', 'navReadings')" style="cursor: pointer;">
+            <span>🔮 Гадания</span>
+        </button>
+        <button class="nav-item" id="navCabinet" onclick="switchPage('cabinetPage', 'navCabinet')" style="cursor: pointer;">
+            <span>👤 Кабинет</span>
+        </button>
+    </nav>
+
+    <script>
+        // Глобальная функция переключения страниц
+        window.switchPage = function(pageId, buttonId) {
+            console.log('Переключение:', pageId);
+            
+            // Скрываем все страницы
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Убираем активный класс
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Показываем нужную страницу
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Активируем кнопку
+            const activeButton = document.getElementById(buttonId);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        };
+        
+        // Запуск после загрузки DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM загружен, навигация готова!');
+        });
+    </script>
+</body>
+</html>
