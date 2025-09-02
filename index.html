@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 Таро Мини-Апп</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="config.js"></script>
+    <script src="standalone.js"></script>
+    <script src="ad-manager.js"></script>
+    <script src="card-manager.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Простые стили для навигации */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-item {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-text {
+            font-weight: 500;
+        }
+        
+        /* Отступ для нижнего меню */
+        body {
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            display: none;
+        }
+        
+        .container.active {
+            display: block;
+        }
+        
+        /* Стили для кнопок гаданий */
+        .spread-card {
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            border: 2px solid transparent !important;
+        }
+        
+        .spread-card:hover {
+            transform: scale(1.05) !important;
+            border-color: #667eea !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+        }
+        
+        .spread-card:active {
+            transform: scale(0.98) !important;
+        }
+        
+        /* Стили для секции рекламы */
+        .ad-section {
+            margin-top: 20px;
+        }
+        
+        .ad-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .ad-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .ad-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .ad-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ad-button:active {
+            transform: translateY(0);
+        }
+        
+        .ad-button.upload {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .ad-button.upload:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .ad-icon {
+            font-size: 20px;
+        }
+        
+        .ad-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .ad-reward {
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Главная страница гаданий -->
+    <div class="container active" id="mainPage">
+        <div class="navbar">
+            <div class="nav-brand">
+                <h1>🔮 Таро</h1>
+            </div>
+            <div class="nav-balance">
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount" id="balanceAmount">1000</span>
+                    <span class="balance-currency">монет</span>
+                </div>
+            </div>
+        </div>
+
+        <header class="header">
+            <h1>🔮 Таро Мини-Апп</h1>
+            <p class="subtitle">Раскройте тайны будущего</p>
+        </header>
+
+        <main class="main">
+            <section class="spread-selection" id="spreadSelection">
+                <h2>🎴 Выберите расклад</h2>
+                <div class="spreads-grid">
+                    <div class="spread-card" data-spread="one_card">
+                        <h3>Одна карта</h3>
+                        <p>Простой ответ на вопрос</p>
+                        <span class="price">50 монет</span>
+                    </div>
+                    <div class="spread-card" data-spread="three_cards">
+                        <h3>Три карты</h3>
+                        <p>Прошлое, настоящее, будущее</p>
+                        <span class="price">100 монет</span>
+                    </div>
+                    <div class="spread-card" data-spread="celtic_cross">
+                        <h3>Кельтский крест</h3>
+                        <p>Глубокий анализ ситуации</p>
+                        <span class="price">200 монет</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Страница магазина -->
+    <div class="container" id="shopPage">
+        <div class="navbar">
+            <div class="nav-brand">
+                <h1>🛒 Магазин</h1>
+            </div>
+            <div class="nav-balance">
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount" id="shopBalanceAmount">1000</span>
+                    <span class="balance-currency">монет</span>
+                </div>
+            </div>
+        </div>
+
+        <main class="main">
+            <section class="shop-section">
+                <h2>🛒 Магазин</h2>
+                <div class="shop-categories">
+                    <div class="category">
+                        <h3>💎 Монеты</h3>
+                        <div class="items-grid">
+                            <div class="shop-item">
+                                <div class="item-icon">💰</div>
+                                <h4>100 монет</h4>
+                                <p>Базовый пакет</p>
+                                <span class="price">$0.99</span>
+                                <button class="btn-primary">Купить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Страница кабинета -->
+    <div class="container" id="cabinetPage">
+        <div class="navbar">
+            <div class="nav-brand">
+                <h1>👤 Кабинет</h1>
+            </div>
+            <div class="nav-balance">
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount" id="cabinetBalanceAmount">1000</span>
+                    <span class="balance-currency">монет</span>
+                </div>
+            </div>
+        </div>
+
+        <main class="main">
+            <section class="cabinet-section">
+                <h2>👤 Кабинет</h2>
+                <div class="cabinet-content">
+                    <div class="user-profile">
+                        <div class="profile-avatar">👤</div>
+                        <div class="profile-info">
+                            <h3>Пользователь</h3>
+                            <p>ID: 123456789</p>
+                            <div class="profile-balance">
+                                <span class="balance-icon">💰</span>
+                                <span class="balance-amount" id="profileBalance">1000</span>
+                                <span class="balance-currency">монет</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>⚙️ Настройки</h3>
+                        <div class="settings-list">
+                            <div class="setting-item">
+                                <span>🔔 Уведомления</span>
+                                <input type="checkbox" id="notificationsEnabled" checked>
+                            </div>
+                            <div class="setting-item">
+                                <span>🌙 Темная тема</span>
+                                <input type="checkbox" id="darkThemeToggle">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ad-section">
+                        <h3>📺 Реклама</h3>
+                        <div class="ad-buttons">
+                            <button onclick="showAdReward()" class="ad-button">
+                                <span class="ad-icon">📺</span>
+                                <span class="ad-text">Смотреть рекламу</span>
+                                <span class="ad-reward">+25 монет</span>
+                            </button>
+                            <button onclick="showAdUpload()" class="ad-button upload">
+                                <span class="ad-icon">📤</span>
+                                <span class="ad-text">Добавить рекламу</span>
+                                <span class="ad-reward">Админ</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Нижнее меню навигации -->
+    <nav class="bottom-nav">
+        <button class="nav-item" id="navShop">
+            <span class="nav-icon">🛒</span>
+            <span class="nav-text">Магазин</span>
+        </button>
+        <button class="nav-item active" id="navReadings">
+            <span class="nav-icon">🔮</span>
+            <span class="nav-text">Гадания</span>
+        </button>
+        <button class="nav-item" id="navCabinet">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">Кабинет</span>
+        </button>
+    </nav>
+
+    <!-- ВСТРОЕННАЯ НАВИГАЦИЯ (ГАРАНТИРОВАННО РАБОТАЕТ) -->
+    <script>
+        console.log('🚀 Загружается встроенная навигация...');
+        
+        function switchPage(pageId, buttonId) {
+            console.log('🔄 Переключение:', pageId);
+            
+            // Скрываем все страницы
+            ['mainPage', 'shopPage', 'cabinetPage', 'miniGamesPage'].forEach(id => {
+                const page = document.getElementById(id);
+                if (page) page.style.display = 'none';
+            });
+            
+            // Убираем активный класс
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Показываем нужную страницу
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                console.log('✅ Показана страница:', pageId);
+            }
+            
+            // Активируем кнопку
+            const activeButton = document.getElementById(buttonId);
+            if (activeButton) {
+                activeButton.classList.add('active');
+                console.log('✅ Активирована кнопка:', buttonId);
+            }
+        }
+        
+        function initNav() {
+            console.log('🔧 Инициализация навигации...');
+            
+            // Кнопка Магазин
+            const shopBtn = document.getElementById('navShop');
+            if (shopBtn) {
+                shopBtn.onclick = function(e) {
+                    e.preventDefault();
+                    console.log('🛒 Клик Магазин');
+                    switchPage('shopPage', 'navShop');
+                };
+                console.log('✅ Магазин готов');
+            }
+            
+            // Кнопка Гадания
+            const readingsBtn = document.getElementById('navReadings');
+            if (readingsBtn) {
+                readingsBtn.onclick = function(e) {
+                    e.preventDefault();
+                    console.log('🔮 Клик Гадания');
+                    switchPage('mainPage', 'navReadings');
+                };
+                console.log('✅ Гадания готовы');
+            }
+            
+            // Кнопка Кабинет
+            const cabinetBtn = document.getElementById('navCabinet');
+            if (cabinetBtn) {
+                cabinetBtn.onclick = function(e) {
+                    e.preventDefault();
+                    console.log('👤 Клик Кабинет');
+                    switchPage('cabinetPage', 'navCabinet');
+                };
+                console.log('✅ Кабинет готов');
+            }
+            
+            // Показываем главную страницу
+            switchPage('mainPage', 'navReadings');
+            console.log('🎉 Навигация инициализирована!');
+        }
+        
+        // Инициализация кнопок гаданий
+        function initSpreadButtons() {
+            console.log('🔮 Инициализация кнопок гаданий...');
+            
+            const spreadCards = document.querySelectorAll('.spread-card');
+            spreadCards.forEach(card => {
+                card.onclick = function() {
+                    const spreadType = this.getAttribute('data-spread');
+                    console.log('🎴 Выбран расклад:', spreadType);
+                    
+                    // Запускаем полноценное гадание
+                    startReading(spreadType);
+                };
+                
+                // Добавляем стили для кликабельности
+                card.style.cursor = 'pointer';
+                card.style.transition = 'transform 0.2s ease';
+                
+                card.onmouseover = function() {
+                    this.style.transform = 'scale(1.05)';
+                };
+                
+                card.onmouseout = function() {
+                    this.style.transform = 'scale(1)';
+                };
+            });
+            
+            console.log('✅ Кнопки гаданий инициализированы:', spreadCards.length);
+        }
+        
+        // Функция для запуска гадания
+        function startReading(spreadType) {
+            console.log('🔮 Запуск гадания:', spreadType);
+            
+            // Проверяем доступность данных карт
+            if (typeof window.tarotData === 'undefined') {
+                alert('❌ Данные карт не загружены. Попробуйте обновить страницу.');
+                return;
+            }
+            
+            // Получаем стоимость гадания
+            const cost = getReadingCost(spreadType);
+            const currentBalance = getCurrentBalance();
+            
+            // Проверяем баланс
+            if (currentBalance < cost) {
+                showInsufficientBalance(cost, currentBalance);
+                return;
+            }
+            
+            // Получаем вопрос от пользователя
+            const question = prompt(`❓ Задайте ваш вопрос:\n\n💰 Стоимость: ${cost} монет\n💳 Ваш баланс: ${currentBalance} монет`);
+            if (!question || question.trim() === '') {
+                alert('❌ Вопрос не может быть пустым!');
+                return;
+            }
+            
+            // Списываем монеты
+            deductCoins(cost);
+            
+            // Выполняем гадание
+            try {
+                const result = window.tarotData.performReading(spreadType, question);
+                
+                // Показываем результат
+                showReadingResult(result, cost);
+                
+            } catch (error) {
+                console.error('Ошибка при гадании:', error);
+                // Возвращаем монеты при ошибке
+                addCoins(cost);
+                alert('❌ Произошла ошибка при гадании. Монеты возвращены. Попробуйте еще раз.');
+            }
+        }
+        
+        // Функция для получения стоимости гадания
+        function getReadingCost(spreadType) {
+            const costs = {
+                'one_card': 50,
+                'three_cards': 100,
+                'celtic_cross': 200
+            };
+            return costs[spreadType] || 50;
+        }
+        
+        // Функция для получения текущего баланса
+        function getCurrentBalance() {
+            const balanceElement = document.getElementById('balanceAmount');
+            if (balanceElement) {
+                return parseInt(balanceElement.textContent) || 0;
+            }
+            return 0;
+        }
+        
+        // Функция для списания монет
+        function deductCoins(amount) {
+            const currentBalance = getCurrentBalance();
+            const newBalance = Math.max(0, currentBalance - amount);
+            
+            // Обновляем все элементы баланса
+            document.querySelectorAll('.balance-amount').forEach(element => {
+                element.textContent = newBalance;
+            });
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('userBalance', newBalance.toString());
+            
+            console.log(`💰 Списано ${amount} монет. Новый баланс: ${newBalance}`);
+        }
+        
+        // Функция для добавления монет
+        function addCoins(amount) {
+            const currentBalance = getCurrentBalance();
+            const newBalance = currentBalance + amount;
+            
+            // Обновляем все элементы баланса
+            document.querySelectorAll('.balance-amount').forEach(element => {
+                element.textContent = newBalance;
+            });
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('userBalance', newBalance.toString());
+            
+            console.log(`💰 Добавлено ${amount} монет. Новый баланс: ${newBalance}`);
+        }
+        
+        // Функция для показа недостаточного баланса
+        function showInsufficientBalance(cost, currentBalance) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 20px;
+                max-width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+            `;
+            
+            content.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 24px;">💰 Недостаточно монет</h2>
+                </div>
+                <div style="font-size: 16px; margin-bottom: 20px;">
+                    <p>Стоимость гадания: <strong>${cost} монет</strong></p>
+                    <p>Ваш баланс: <strong>${currentBalance} монет</strong></p>
+                    <p>Необходимо еще: <strong>${cost - currentBalance} монет</strong></p>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button onclick="showAdReward()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 2px solid white;
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        📺 Смотреть рекламу
+                    </button>
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 2px solid white;
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        ✨ Закрыть
+                    </button>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            // Закрытие по клику вне модального окна
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+        
+        // Функция для показа результата гадания
+        function showReadingResult(result, cost) {
+            // Создаем модальное окно для результата
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 20px;
+                max-width: 90%;
+                max-height: 80%;
+                overflow-y: auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+            `;
+            
+            content.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 24px;">🔮 Результат гадания</h2>
+                    <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">💰 Потрачено: ${cost} монет</p>
+                </div>
+                <div style="white-space: pre-line; font-size: 16px;">${result}</div>
+                <div style="text-align: center; margin-top: 30px;">
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 2px solid white;
+                        color: white;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        ✨ Закрыть
+                    </button>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            // Закрытие по клику вне модального окна
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+        
+        // Функция для показа рекламы и получения награды
+        function showAdReward() {
+            // Закрываем предыдущее модальное окно
+            const existingModal = document.querySelector('.modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Создаем модальное окно рекламы
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10001;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
+                padding: 40px;
+                border-radius: 20px;
+                max-width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+            `;
+            
+            content.innerHTML = `
+                <div style="margin-bottom: 30px;">
+                    <h2 style="margin: 0; font-size: 28px;">📺 Реклама</h2>
+                    <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Смотрите рекламу и получайте монеты!</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+                    <h3 style="margin: 0 0 15px 0; font-size: 20px;">🎬 Демо-реклама</h3>
+                    <p style="margin: 0; font-size: 16px; line-height: 1.5;">
+                        Это демо-версия рекламы. В реальном приложении здесь будет показываться настоящая реклама от рекламных сетей.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button onclick="completeAdReward()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 2px solid white;
+                        color: white;
+                        padding: 15px 30px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        ✅ Получить награду
+                    </button>
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: rgba(255,255,255,0.1);
+                        border: 2px solid rgba(255,255,255,0.5);
+                        color: white;
+                        padding: 15px 30px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.2)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        ❌ Пропустить
+                    </button>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            // Закрытие по клику вне модального окна
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+        
+        // Функция для завершения просмотра рекламы
+        function completeAdReward() {
+            // Закрываем модальное окно рекламы
+            const adModal = document.querySelector('.modal');
+            if (adModal) {
+                adModal.remove();
+            }
+            
+            // Добавляем монеты за просмотр рекламы
+            const reward = 25; // 25 монет за рекламу
+            addCoins(reward);
+            
+            // Показываем уведомление о награде
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10002;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 20px;
+                max-width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+            `;
+            
+            content.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 24px;">🎉 Спасибо за просмотр!</h2>
+                </div>
+                <div style="font-size: 18px; margin-bottom: 20px;">
+                    <p>💰 Вы получили: <strong>${reward} монет</strong></p>
+                    <p>💳 Новый баланс: <strong>${getCurrentBalance()} монет</strong></p>
+                </div>
+                <div style="text-align: center;">
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 2px solid white;
+                        color: white;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        ✨ Продолжить
+                    </button>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            // Автоматически закрываем через 3 секунды
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.remove();
+                }
+            }, 3000);
+        }
+        
+        // Функция для показа загрузки рекламы
+        function showAdUpload() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 20px;
+                max-width: 90%;
+                max-height: 80%;
+                overflow-y: auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+            `;
+            
+            content.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 24px;">📤 Загрузка рекламы</h2>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <p style="margin: 0 0 15px 0; font-size: 16px;">Выберите файл рекламы для загрузки:</p>
+                    <input type="file" id="adFileInput" accept="image/*,video/*" style="
+                        width: 100%;
+                        padding: 10px;
+                        border: 2px solid rgba(255,255,255,0.3);
+                        border-radius: 10px;
+                        background: rgba(255,255,255,0.1);
+                        color: white;
+                        font-size: 16px;
+                        margin-bottom: 15px;
+                    ">
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 16px;">📋 Требования к рекламе:</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.5;">
+                            <li>Формат: JPG, PNG, MP4, MOV</li>
+                            <li>Размер: до 10 МБ</li>
+                            <li>Длительность видео: до 30 секунд</li>
+                            <li>Разрешение: минимум 720p</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button onclick="uploadAd()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 2px solid white;
+                        color: white;
+                        padding: 12px 25px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        📤 Загрузить
+                    </button>
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: rgba(255,255,255,0.1);
+                        border: 2px solid rgba(255,255,255,0.5);
+                        color: white;
+                        padding: 12px 25px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.2)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        ❌ Отмена
+                    </button>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            // Закрытие по клику вне модального окна
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+        
+        // Функция для загрузки рекламы
+        function uploadAd() {
+            const fileInput = document.getElementById('adFileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('❌ Пожалуйста, выберите файл для загрузки!');
+                return;
+            }
+            
+            // Проверяем размер файла (10 МБ)
+            const maxSize = 10 * 1024 * 1024; // 10 МБ в байтах
+            if (file.size > maxSize) {
+                alert('❌ Файл слишком большой! Максимальный размер: 10 МБ');
+                return;
+            }
+            
+            // Проверяем тип файла
+            const allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'video/quicktime'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('❌ Неподдерживаемый формат файла! Разрешены: JPG, PNG, MP4, MOV');
+                return;
+            }
+            
+            // Закрываем модальное окно
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+            
+            // Показываем уведомление об успешной загрузке
+            const successModal = document.createElement('div');
+            successModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            const successContent = document.createElement('div');
+            successContent.style.cssText = `
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 20px;
+                max-width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;
+            `;
+            
+            successContent.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 24px;">✅ Реклама загружена!</h2>
+                </div>
+                <div style="font-size: 16px; margin-bottom: 20px;">
+                    <p>📁 Файл: <strong>${file.name}</strong></p>
+                    <p>📏 Размер: <strong>${(file.size / 1024 / 1024).toFixed(2)} МБ</strong></p>
+                    <p>🎬 Тип: <strong>${file.type}</strong></p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 14px;">
+                        <strong>Примечание:</strong> В демо-версии файл не загружается на сервер. 
+                        В реальном приложении здесь будет интеграция с сервером для загрузки рекламы.
+                    </p>
+                </div>
+                <div style="text-align: center;">
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 2px solid white;
+                        color: white;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        ✨ Понятно
+                    </button>
+                </div>
+            `;
+            
+            successModal.className = 'modal';
+            successModal.appendChild(successContent);
+            document.body.appendChild(successModal);
+            
+            // Автоматически закрываем через 5 секунд
+            setTimeout(() => {
+                if (successModal.parentNode) {
+                    successModal.remove();
+                }
+            }, 5000);
+            
+            console.log('📤 Реклама загружена:', file.name, file.size, file.type);
+        }
+        
+        // Функция для инициализации баланса
+        function initBalance() {
+            const savedBalance = localStorage.getItem('userBalance');
+            if (savedBalance) {
+                // Обновляем все элементы баланса
+                document.querySelectorAll('.balance-amount').forEach(element => {
+                    element.textContent = savedBalance;
+                });
+                console.log('💰 Баланс загружен из localStorage:', savedBalance);
+            } else {
+                // Устанавливаем начальный баланс
+                const initialBalance = 1000;
+                localStorage.setItem('userBalance', initialBalance.toString());
+                document.querySelectorAll('.balance-amount').forEach(element => {
+                    element.textContent = initialBalance;
+                });
+                console.log('💰 Установлен начальный баланс:', initialBalance);
+            }
+        }
+        
+        // Запуск после загрузки DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 DOM загружен');
+            initBalance(); // Инициализируем баланс
+            setTimeout(initNav, 500);
+            setTimeout(initSpreadButtons, 1000);
+        });
+    </script>
+    
+    <!-- Подключаем простую навигацию -->
+    <script src="simple-navigation.js"></script>
+    
+    <!-- Основные скрипты -->
+    <script src="script.js"></script>
+    <script src="enhanced-features.js"></script>
+    <script src="notifications.js"></script>
+</body>
+</html>
