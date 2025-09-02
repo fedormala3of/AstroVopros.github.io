@@ -208,6 +208,212 @@
         </footer>
     </div>
 
+    <!-- Нижнее меню -->
+    <nav class="bottom-nav">
+        <button class="nav-item" id="navShop">
+            <span class="nav-icon">🛒</span>
+            <span class="nav-label">Магазин</span>
+        </button>
+        <button class="nav-item active" id="navReadings">
+            <span class="nav-icon">🔮</span>
+            <span class="nav-label">Гадания</span>
+        </button>
+        <button class="nav-item" id="navCabinet">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Кабинет</span>
+        </button>
+    </nav>
+
+    <!-- Секция магазина -->
+    <section class="shop-section" id="shopSection" style="display: none;">
+        <div class="shop-container">
+            <h2>🛒 Магазин</h2>
+            <div class="shop-categories">
+                <div class="shop-category">
+                    <h3>💎 Монеты</h3>
+                    <div class="shop-items">
+                        <div class="shop-item">
+                            <div class="item-icon">💰</div>
+                            <div class="item-info">
+                                <h4>100 монет</h4>
+                                <p>Базовый пакет</p>
+                            </div>
+                            <div class="item-price">$0.99</div>
+                            <button class="btn-buy">Купить</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💰</div>
+                            <div class="item-info">
+                                <h4>500 монет</h4>
+                                <p>Популярный пакет</p>
+                            </div>
+                            <div class="item-price">$3.99</div>
+                            <button class="btn-buy">Купить</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💰</div>
+                            <div class="item-info">
+                                <h4>1000 монет</h4>
+                                <p>Выгодный пакет</p>
+                            </div>
+                            <div class="item-price">$6.99</div>
+                            <button class="btn-buy">Купить</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="shop-category">
+                    <h3>🎨 Темы</h3>
+                    <div class="shop-items">
+                        <div class="shop-item">
+                            <div class="item-icon">🌙</div>
+                            <div class="item-info">
+                                <h4>Темная тема</h4>
+                                <p>Стильная темная тема</p>
+                            </div>
+                            <div class="item-price">50 монет</div>
+                            <button class="btn-buy">Купить</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🌸</div>
+                            <div class="item-info">
+                                <h4>Розовая тема</h4>
+                                <p>Нежная розовая тема</p>
+                            </div>
+                            <div class="item-price">50 монет</div>
+                            <button class="btn-buy">Купить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция кабинета -->
+    <section class="cabinet-section" id="cabinetSection" style="display: none;">
+        <div class="cabinet-container">
+            <h2>👤 Кабинет</h2>
+            
+            <!-- Профиль пользователя -->
+            <div class="user-profile">
+                <div class="profile-avatar">
+                    <span class="avatar-icon">👤</span>
+                </div>
+                <div class="profile-info">
+                    <h3>Пользователь</h3>
+                    <p>ID: 123456789</p>
+                    <div class="profile-balance">
+                        <span class="balance-icon">💰</span>
+                        <span class="balance-amount" id="profileBalance">1000</span>
+                        <span class="balance-currency">монет</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Настройки -->
+            <div class="settings-section">
+                <h3>⚙️ Настройки</h3>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <span class="setting-icon">🔔</span>
+                        <span class="setting-label">Уведомления</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-icon">🌙</span>
+                        <span class="setting-label">Темная тема</span>
+                        <label class="switch">
+                            <input type="checkbox" id="darkThemeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-icon">🔊</span>
+                        <span class="setting-label">Звуки</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-icon">🌍</span>
+                        <span class="setting-label">Язык</span>
+                        <select class="language-select">
+                            <option value="ru">Русский</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Управление рекламой -->
+            <div class="ad-management">
+                <h3>📺 Управление рекламой</h3>
+                <div class="ad-controls">
+                    <button class="btn-primary" id="uploadAdBtn">📤 Загрузить рекламу</button>
+                    <button class="btn-secondary" id="viewAdStatsBtn">📊 Статистика рекламы</button>
+                    <button class="btn-secondary" id="manageAdsBtn">⚙️ Управление рекламой</button>
+                </div>
+                
+                <!-- Загрузка рекламы -->
+                <div class="ad-upload" id="adUpload" style="display: none;">
+                    <h4>📤 Загрузка рекламы</h4>
+                    <div class="upload-area">
+                        <input type="file" id="adFileInput" accept="video/*,image/*" style="display: none;">
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <span class="upload-icon">📁</span>
+                            <p>Перетащите файл сюда или нажмите для выбора</p>
+                            <p class="upload-hint">Поддерживаются: MP4, AVI, JPG, PNG</p>
+                        </div>
+                    </div>
+                    <div class="upload-form">
+                        <input type="text" id="adTitle" placeholder="Название рекламы" class="form-input">
+                        <input type="text" id="adDescription" placeholder="Описание рекламы" class="form-input">
+                        <input type="number" id="adReward" placeholder="Награда (монеты)" class="form-input" value="50">
+                        <input type="number" id="adDuration" placeholder="Длительность (секунды)" class="form-input" value="15">
+                        <button class="btn-primary" id="submitAdBtn">Загрузить рекламу</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Статистика -->
+            <div class="user-stats">
+                <h3>📈 Статистика</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-icon">🔮</span>
+                        <span class="stat-value" id="totalReadings">0</span>
+                        <span class="stat-label">Гаданий</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">💰</span>
+                        <span class="stat-value" id="totalSpent">0</span>
+                        <span class="stat-label">Потрачено</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📺</span>
+                        <span class="stat-value" id="adsWatched">0</span>
+                        <span class="stat-label">Рекламы</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">⭐</span>
+                        <span class="stat-value" id="userLevel">1</span>
+                        <span class="stat-label">Уровень</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Действия -->
+            <div class="cabinet-actions">
+                <button class="btn-secondary" id="exportDataBtn">📤 Экспорт данных</button>
+                <button class="btn-secondary" id="resetProgressBtn">🔄 Сбросить прогресс</button>
+                <button class="btn-danger" id="deleteAccountBtn">🗑️ Удалить аккаунт</button>
+            </div>
+        </div>
+    </section>
+
     <script src="script.js"></script>
 </body>
 </html>
