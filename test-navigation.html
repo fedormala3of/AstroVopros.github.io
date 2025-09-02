@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 Тест навигации</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="config.js"></script>
+    <script src="standalone.js"></script>
+    <script src="ad-manager.js"></script>
+    <script src="card-manager.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .test-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 10000;
+            max-width: 300px;
+            font-size: 12px;
+        }
+        .test-button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .log {
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Тестовая панель -->
+    <div class="test-panel">
+        <h3>🔧 Тест навигации</h3>
+        <button class="test-button" onclick="testShowShop()">🛒 Магазин</button>
+        <button class="test-button" onclick="testShowReadings()">🔮 Гадания</button>
+        <button class="test-button" onclick="testShowCabinet()">👤 Кабинет</button>
+        <button class="test-button" onclick="checkElements()">🔍 Проверить</button>
+        <button class="test-button" onclick="clearLog()">🗑️ Очистить</button>
+        <div class="log" id="log"></div>
+    </div>
+
+    <!-- Главная страница гаданий -->
+    <div class="container" id="mainPage">
+        <!-- Навигационное меню -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>🔮 Таро</h1>
+            </div>
+            <div class="nav-balance">
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount" id="balanceAmount">1000</span>
+                    <span class="balance-currency">монет</span>
+                </div>
+            </div>
+        </nav>
+
+        <header class="header">
+            <h1>🔮 Таро Мини-Апп</h1>
+            <p class="subtitle">Раскройте тайны будущего</p>
+        </header>
+
+        <main class="main">
+            <section class="spread-selection" id="spreadSelection">
+                <h2>🎴 Выберите расклад</h2>
+                <div class="spreads-grid">
+                    <div class="spread-card" data-spread="one_card">
+                        <h3>Одна карта</h3>
+                        <p>Простой ответ на вопрос</p>
+                        <span class="price">50 монет</span>
+                    </div>
+                    <div class="spread-card" data-spread="three_cards">
+                        <h3>Три карты</h3>
+                        <p>Прошлое, настоящее, будущее</p>
+                        <span class="price">100 монет</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Страница магазина -->
+    <div class="container" id="shopPage" style="display: none;">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>🛒 Магазин</h1>
+            </div>
+            <div class="nav-balance">
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount" id="shopBalanceAmount">1000</span>
+                    <span class="balance-currency">монет</span>
+                </div>
+            </div>
+        </nav>
+        <div class="shop-section">
+            <div class="shop-container">
+                <h2>🛒 Магазин</h2>
+                <div class="shop-categories">
+                    <div class="shop-category">
+                        <h3>💎 Монеты</h3>
+                        <div class="shop-items">
+                            <div class="shop-item">
+                                <div class="item-icon">💰</div>
+                                <div class="item-info">
+                                    <h4>100 монет</h4>
+                                    <p>Базовый пакет</p>
+                                </div>
+                                <div class="item-price">$0.99</div>
+                                <button class="btn-buy">Купить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница кабинета -->
+    <div class="container" id="cabinetPage" style="display: none;">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>👤 Кабинет</h1>
+            </div>
+            <div class="nav-balance">
+                <div class="balance-display">
+                    <span class="balance-icon">💰</span>
+                    <span class="balance-amount" id="cabinetBalanceAmount">1000</span>
+                    <span class="balance-currency">монет</span>
+                </div>
+            </div>
+        </nav>
+        <div class="cabinet-section">
+            <div class="cabinet-container">
+                <h2>👤 Кабинет</h2>
+                <div class="user-profile">
+                    <div class="profile-avatar">
+                        <span class="avatar-icon">👤</span>
+                    </div>
+                    <div class="profile-info">
+                        <h3>Пользователь</h3>
+                        <p>ID: 123456789</p>
+                        <div class="profile-balance">
+                            <span class="balance-icon">💰</span>
+                            <span class="balance-amount" id="profileBalance">1000</span>
+                            <span class="balance-currency">монет</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижнее меню -->
+    <nav class="bottom-nav">
+        <button class="nav-item" id="navShop">
+            <span class="nav-icon">🛒</span>
+            <span class="nav-label">Магазин</span>
+        </button>
+        <button class="nav-item active" id="navReadings">
+            <span class="nav-icon">🔮</span>
+            <span class="nav-label">Гадания</span>
+        </button>
+        <button class="nav-item" id="navCabinet">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Кабинет</span>
+        </button>
+    </nav>
+
+    <script src="script.js"></script>
+    <script src="enhanced-features.js"></script>
+    <script src="notifications.js"></script>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${time}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Простые функции навигации для тестирования
+        function showPage(pageId, activeButtonId) {
+            // Скрываем все страницы
+            const pages = ['mainPage', 'shopPage', 'cabinetPage'];
+            pages.forEach(id => {
+                const page = document.getElementById(id);
+                if (page) page.style.display = 'none';
+            });
+            
+            // Убираем активный класс со всех кнопок
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Показываем нужную страницу
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                log(`✅ Показана страница: ${pageId}`);
+            } else {
+                log(`❌ Страница не найдена: ${pageId}`);
+            }
+            
+            // Активируем кнопку
+            const activeButton = document.getElementById(activeButtonId);
+            if (activeButton) {
+                activeButton.classList.add('active');
+                log(`✅ Активирована кнопка: ${activeButtonId}`);
+            }
+        }
+
+        function testShowShop() {
+            log('Тестируем показ магазина...');
+            if (window.testNavigation && window.testNavigation.showShop) {
+                window.testNavigation.showShop();
+                log('✅ Функция showShop вызвана');
+            } else {
+                log('❌ Функция showShop не найдена, используем простую навигацию');
+                showPage('shopPage', 'navShop');
+            }
+        }
+
+        function testShowReadings() {
+            log('Тестируем показ гаданий...');
+            if (window.testNavigation && window.testNavigation.showReadings) {
+                window.testNavigation.showReadings();
+                log('✅ Функция showReadings вызвана');
+            } else {
+                log('❌ Функция showReadings не найдена, используем простую навигацию');
+                showPage('mainPage', 'navReadings');
+            }
+        }
+
+        function testShowCabinet() {
+            log('Тестируем показ кабинета...');
+            if (window.testNavigation && window.testNavigation.showCabinet) {
+                window.testNavigation.showCabinet();
+                log('✅ Функция showCabinet вызвана');
+            } else {
+                log('❌ Функция showCabinet не найдена, используем простую навигацию');
+                showPage('cabinetPage', 'navCabinet');
+            }
+        }
+
+        function checkElements() {
+            log('Проверяем элементы навигации...');
+            
+            const navShop = document.getElementById('navShop');
+            const navReadings = document.getElementById('navReadings');
+            const navCabinet = document.getElementById('navCabinet');
+            
+            log(`navShop: ${navShop ? '✅ найден' : '❌ не найден'}`);
+            log(`navReadings: ${navReadings ? '✅ найден' : '❌ не найден'}`);
+            log(`navCabinet: ${navCabinet ? '✅ найден' : '❌ не найден'}`);
+            
+            const mainPage = document.getElementById('mainPage');
+            const shopPage = document.getElementById('shopPage');
+            const cabinetPage = document.getElementById('cabinetPage');
+            
+            log(`mainPage: ${mainPage ? '✅ найден' : '❌ не найден'}`);
+            log(`shopPage: ${shopPage ? '✅ найден' : '❌ не найден'}`);
+            log(`cabinetPage: ${cabinetPage ? '✅ найден' : '❌ не найден'}`);
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            log(`Найдено кнопок навигации: ${navItems.length}`);
+            
+            navItems.forEach((item, index) => {
+                log(`Кнопка ${index}: ${item.id} - "${item.textContent.trim()}"`);
+            });
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Автоматическая проверка при загрузке
+        window.addEventListener('load', () => {
+            log('Страница загружена, начинаем проверку...');
+            setTimeout(() => {
+                checkElements();
+                
+                // Проверяем доступность функций
+                log('Проверяем доступность функций...');
+                log(`window.testNavigation: ${window.testNavigation ? '✅ найдена' : '❌ не найдена'}`);
+                log(`window.forceInitNavigation: ${window.forceInitNavigation ? '✅ найдена' : '❌ не найдена'}`);
+                log(`window.initBottomNavigation: ${window.initBottomNavigation ? '✅ найдена' : '❌ не найдена'}`);
+                
+                // Принудительно инициализируем навигацию
+                if (window.forceInitNavigation) {
+                    log('Принудительно инициализируем навигацию...');
+                    window.forceInitNavigation();
+                } else if (window.initBottomNavigation) {
+                    log('Вызываем initBottomNavigation напрямую...');
+                    window.initBottomNavigation();
+                } else {
+                    log('❌ Функции навигации не найдены!');
+                }
+                
+                // Повторная проверка через 3 секунды
+                setTimeout(() => {
+                    log('Повторная проверка функций...');
+                    log(`window.testNavigation: ${window.testNavigation ? '✅ найдена' : '❌ не найдена'}`);
+                    if (window.testNavigation) {
+                        log('Доступные функции:', Object.keys(window.testNavigation));
+                    }
+                    
+                    // Добавляем обработчики событий для кнопок навигации
+                    log('Добавляем обработчики событий...');
+                    const navShop = document.getElementById('navShop');
+                    const navReadings = document.getElementById('navReadings');
+                    const navCabinet = document.getElementById('navCabinet');
+                    
+                    if (navShop) {
+                        navShop.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            log('Клик по кнопке Магазин');
+                            showPage('shopPage', 'navShop');
+                        });
+                        log('✅ Обработчик для navShop добавлен');
+                    }
+                    
+                    if (navReadings) {
+                        navReadings.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            log('Клик по кнопке Гадания');
+                            showPage('mainPage', 'navReadings');
+                        });
+                        log('✅ Обработчик для navReadings добавлен');
+                    }
+                    
+                    if (navCabinet) {
+                        navCabinet.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            log('Клик по кнопке Кабинет');
+                            showPage('cabinetPage', 'navCabinet');
+                        });
+                        log('✅ Обработчик для navCabinet добавлен');
+                    }
+                }, 3000);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
