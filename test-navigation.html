@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 Тест навигации</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .log {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔮 Тест навигации мини-приложения</h1>
+        
+        <h3>Тестовые кнопки:</h3>
+        <button class="test-button" onclick="testShowShop()">🛒 Показать магазин</button>
+        <button class="test-button" onclick="testShowReadings()">🔮 Показать гадания</button>
+        <button class="test-button" onclick="testShowCabinet()">👤 Показать кабинет</button>
+        
+        <h3>Проверка элементов:</h3>
+        <button class="test-button" onclick="checkElements()">🔍 Проверить элементы</button>
+        <button class="test-button" onclick="clearLog()">🗑️ Очистить лог</button>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${time}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function testShowShop() {
+            log('Тестируем показ магазина...');
+            if (window.testNavigation && window.testNavigation.showShop) {
+                window.testNavigation.showShop();
+                log('✅ Функция showShop вызвана');
+            } else {
+                log('❌ Функция showShop не найдена');
+            }
+        }
+
+        function testShowReadings() {
+            log('Тестируем показ гаданий...');
+            if (window.testNavigation && window.testNavigation.showReadings) {
+                window.testNavigation.showReadings();
+                log('✅ Функция showReadings вызвана');
+            } else {
+                log('❌ Функция showReadings не найдена');
+            }
+        }
+
+        function testShowCabinet() {
+            log('Тестируем показ кабинета...');
+            if (window.testNavigation && window.testNavigation.showCabinet) {
+                window.testNavigation.showCabinet();
+                log('✅ Функция showCabinet вызвана');
+            } else {
+                log('❌ Функция showCabinet не найдена');
+            }
+        }
+
+        function checkElements() {
+            log('Проверяем элементы навигации...');
+            
+            const navShop = document.getElementById('navShop');
+            const navReadings = document.getElementById('navReadings');
+            const navCabinet = document.getElementById('navCabinet');
+            
+            log(`navShop: ${navShop ? '✅ найден' : '❌ не найден'}`);
+            log(`navReadings: ${navReadings ? '✅ найден' : '❌ не найден'}`);
+            log(`navCabinet: ${navCabinet ? '✅ найден' : '❌ не найден'}`);
+            
+            const mainPage = document.getElementById('mainPage');
+            const shopPage = document.getElementById('shopPage');
+            const cabinetPage = document.getElementById('cabinetPage');
+            
+            log(`mainPage: ${mainPage ? '✅ найден' : '❌ не найден'}`);
+            log(`shopPage: ${shopPage ? '✅ найден' : '❌ не найден'}`);
+            log(`cabinetPage: ${cabinetPage ? '✅ найден' : '❌ не найден'}`);
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            log(`Найдено кнопок навигации: ${navItems.length}`);
+            
+            navItems.forEach((item, index) => {
+                log(`Кнопка ${index}: ${item.id} - "${item.textContent.trim()}"`);
+            });
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Автоматическая проверка при загрузке
+        window.addEventListener('load', () => {
+            log('Страница загружена, начинаем проверку...');
+            setTimeout(checkElements, 1000);
+        });
+    </script>
+</body>
+</html>
